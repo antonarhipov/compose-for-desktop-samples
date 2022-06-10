@@ -26,7 +26,7 @@ tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf(
             "-Xcontext-receivers",
-            "-Xuse-k2",
+//            "-Xuse-k2",
             "-Xbackend-threads=4",
         )
         jvmTarget = "11"

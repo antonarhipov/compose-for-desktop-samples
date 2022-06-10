@@ -10,12 +10,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -27,9 +29,60 @@ const val ACTION_DOWN = 1
 const val ACTION_MOVE = 2
 const val ACTION_UP = 3
 
-typealias Command = (Offset) -> Unit
+sealed class Shape {
+    abstract fun DrawScope.draw()
+}
 
-val listOfFigures = mutableListOf<Pair<Command, Offset>>()
+class Ellipse(
+    private val color: Color,
+    private val offset: Offset,
+    private val rotation: Float
+) : Shape() {
+    override fun DrawScope.draw() {
+        rotate(rotation, offset) {
+            rotate(rotation, offset) {
+                drawOval(
+                    color = color,
+                    topLeft = offset.copy(offset.x - 50, offset.y - 65),
+                    size = Size(100f, 130f)
+                )
+            }
+        }
+    }
+}
+
+class Square(
+    private val color: Color,
+    private val offset: Offset,
+    private val rotation: Float
+) : Shape() {
+    override fun DrawScope.draw() {
+        rotate(rotation, offset) {
+            drawRect(
+                color = color,
+                topLeft = offset.copy(offset.x - 50, offset.y - 50),
+                size = Size(100f, 100f)
+            )
+        }
+    }
+}
+
+class Circle(
+    private val color: Color,
+    private val offset: Offset
+) : Shape() {
+    override fun DrawScope.draw() {
+        drawCircle(
+            color = color,
+            center = offset,
+            radius = 50f,
+            style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
+    }
+}
+
+
+val shapes = mutableListOf<Shape>()
 
 fun main() = application {
     Window(
@@ -50,24 +103,39 @@ fun main() = application {
                                     motionEvent = ACTION_DOWN
                                     currentPosition = it.position
                                 }
+
+                                do {
+                                    // This PointerEvent contains details including events, id, position and more
+                                    val event: PointerEvent = awaitPointerEvent()
+                                    event.changes.forEach { pointerInputChange: PointerInputChange ->
+                                        pointerInputChange.consumePositionChange()
+                                    }
+                                    motionEvent = ACTION_MOVE
+                                    currentPosition = event.changes.first().position
+                                } while (event.changes.any { it.pressed })
+                                motionEvent = ACTION_UP
                             }
                         }
                     }
             ) {
-                fun draw(offset: Offset) =
-                    drawCircle(
-                        color = Color.Magenta,
-                        center = offset,
-                        radius = size.minDimension / 4,
-                        style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-                    )
+                fun redraw() {
+                    shapes.add(randomShape(currentPosition))
+                    shapes.forEach {
+                        with(it) { draw() }
+                    }
+                }
 
                 when (motionEvent) {
-                    ACTION_DOWN -> {
-                        listOfFigures.add(Pair(::draw, currentPosition))
-                        listOfFigures.forEach { (command, offset) ->
-                            command(offset)
+                    ACTION_DOWN -> redraw()
+                    ACTION_MOVE -> {
+                        if (currentPosition != Offset.Unspecified) {
+                            redraw()
                         }
+                    }
+
+                    ACTION_UP -> {
+//                        motionEvent = ACTION_IDLE
+                        redraw()
                     }
 //                    else -> Unit
                 }
@@ -75,3 +143,20 @@ fun main() = application {
         }
     }
 }
+
+fun randomShape(currentPosition: Offset): Shape =
+    when ((0..50).random()) {
+        in 0..30 -> Circle(randomColor(), currentPosition)
+        in 31..45 -> Square(randomColor(), currentPosition, randomRotation())
+        else -> Ellipse(randomColor(), currentPosition, randomRotation())
+    }
+
+fun randomColor() : Color {
+    val colorRange = 0..255
+    val r = colorRange.random()
+    val g = colorRange.random()
+    val b = colorRange.random()
+    return Color(r, g, b)
+}
+
+fun randomRotation() = (0..180).random().toFloat()
