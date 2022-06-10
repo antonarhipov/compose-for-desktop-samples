@@ -44,7 +44,8 @@ class Ellipse(
                 drawOval(
                     color = color,
                     topLeft = offset.copy(offset.x - 50, offset.y - 65),
-                    size = Size(100f, 130f)
+                    size = Size(100f, 130f),
+                    style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
                 )
             }
         }
@@ -61,7 +62,8 @@ class Square(
             drawRect(
                 color = color,
                 topLeft = offset.copy(offset.x - 50, offset.y - 50),
-                size = Size(100f, 100f)
+                size = Size(100f, 100f),
+                style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
         }
     }
@@ -113,7 +115,7 @@ fun main() = application {
                                     motionEvent = ACTION_MOVE
                                     currentPosition = event.changes.first().position
                                 } while (event.changes.any { it.pressed })
-                                motionEvent = ACTION_UP
+//                                motionEvent = ACTION_UP
                             }
                         }
                     }
@@ -133,10 +135,10 @@ fun main() = application {
                         }
                     }
 
-                    ACTION_UP -> {
+//                    ACTION_UP -> {
 //                        motionEvent = ACTION_IDLE
-                        redraw()
-                    }
+//                        redraw()
+//                    }
 //                    else -> Unit
                 }
             }
