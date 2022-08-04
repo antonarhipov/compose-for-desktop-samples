@@ -30,7 +30,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Compose for Desktop",
+        title = "Drawing strokes",
         state = rememberWindowState(width = 500.dp, height = 500.dp)
     ) {
         MaterialTheme {

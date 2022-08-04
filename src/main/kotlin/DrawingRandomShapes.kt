@@ -103,7 +103,7 @@ val shapes = mutableListOf<Shape>()
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Compose for Desktop",
+        title = "Random shapes",
         state = rememberWindowState(width = 500.dp, height = 500.dp),
         onKeyEvent = {
             if (it.key == Key.C) {

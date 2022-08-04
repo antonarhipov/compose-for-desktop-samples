@@ -20,7 +20,7 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Compose for Desktop",
+        title = "Circles",
         state = rememberWindowState(width = 800.dp, height = 800.dp)
     ) {
         MaterialTheme {
