@@ -2,6 +2,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
@@ -30,12 +31,12 @@ fun main() = application {
                 .clipToBounds()
 
             Canvas(modifier = drawModifier) {
-                for (i in 0..600) {
+                for (i in 0..500) {
                     val coefficient = 0.75
                     val x = window.width + Random.nextDouble(-window.width * coefficient, window.width * coefficient)
                     val y = window.height + Random.nextDouble(-window.height * coefficient, window.width * coefficient)
 
-                    polygon(x.toFloat(), y.toFloat(), 100f, Random.nextInt(5, 9))
+                    polygon(x.toFloat(), y.toFloat(), 250f, 6)
                 }
             }
         }
@@ -44,7 +45,10 @@ fun main() = application {
 
 private fun DrawScope.polygon(x: Float, y: Float, radius: Float, npoints: Int) {
     val angle = 2 * PI / npoints
-    var nextAngle = 0.0
+
+    val randomRotationAngle = Random.nextDouble(-0.1, 0.1)
+
+    var nextAngle = 0.0 + randomRotationAngle
 
     var ssx = x + cos(nextAngle) * radius
     var ssy = y + sin(nextAngle) * radius
@@ -55,7 +59,7 @@ private fun DrawScope.polygon(x: Float, y: Float, radius: Float, npoints: Int) {
         Random.nextInt(0xFF),
     )
 
-    while (nextAngle < 2 * PI) {
+    while (nextAngle < 2 * PI + randomRotationAngle) {
         nextAngle += angle
         val sx = x + cos(nextAngle) * radius
         val sy = y + sin(nextAngle) * radius
