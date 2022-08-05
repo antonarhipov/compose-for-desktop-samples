@@ -21,7 +21,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = "Polygons",
-        state = rememberWindowState(width = 800.dp, height = 800.dp)
+        state = rememberWindowState(width = 1000.dp, height = 1000.dp)
     ) {
         MaterialTheme {
             val drawModifier = Modifier
@@ -30,12 +30,12 @@ fun main() = application {
                 .clipToBounds()
 
             Canvas(modifier = drawModifier) {
-                for (i in 0..1000) {
+                for (i in 0..600) {
                     val coefficient = 0.75
                     val x = window.width + Random.nextDouble(-window.width * coefficient, window.width * coefficient)
                     val y = window.height + Random.nextDouble(-window.height * coefficient, window.width * coefficient)
 
-                    polygon(x.toFloat(), y.toFloat(), 100f, 6)
+                    polygon(x.toFloat(), y.toFloat(), 100f, Random.nextInt(5, 9))
                 }
             }
         }
@@ -49,11 +49,23 @@ private fun DrawScope.polygon(x: Float, y: Float, radius: Float, npoints: Int) {
     var ssx = x + cos(nextAngle) * radius
     var ssy = y + sin(nextAngle) * radius
 
+    val color = Color(
+        Random.nextInt(0xFF),
+        Random.nextInt(0xFF),
+        Random.nextInt(0xFF),
+    )
+
     while (nextAngle < 2 * PI) {
         nextAngle += angle
         val sx = x + cos(nextAngle) * radius
         val sy = y + sin(nextAngle) * radius
-        drawLine(Color.Blue, Offset(ssx.toFloat(), ssy.toFloat()), Offset(sx.toFloat(), sy.toFloat()))
+
+        drawLine(
+            color,
+            Offset(ssx.toFloat(), ssy.toFloat()),
+            Offset(sx.toFloat(), sy.toFloat()),
+            strokeWidth = Random.nextDouble(1.1, 2.2).toFloat()
+        )
         ssx = sx
         ssy = sy
     }
