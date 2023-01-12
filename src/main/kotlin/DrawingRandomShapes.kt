@@ -138,7 +138,8 @@ fun main() = application {
                                     // This PointerEvent contains details including events, id, position and more
                                     val event: PointerEvent = awaitPointerEvent()
                                     event.changes.forEach { pointerInputChange: PointerInputChange ->
-                                        pointerInputChange.consumePositionChange()
+                                        if (pointerInputChange.positionChange() != Offset.Zero)
+                                            pointerInputChange.consume()
                                     }
                                     motionEvent = ACTION_MOVE
                                     currentPosition = event.changes.first().position
