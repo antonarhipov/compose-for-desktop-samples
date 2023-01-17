@@ -25,11 +25,11 @@ fun PropertySlider(
 ) {
     var value by remember { mutableStateOf(initialValue.toFloat()) }
     Column(
-        modifier = Modifier.padding(2.dp)
+        modifier = Modifier.padding(10.dp)
     ) {
         Row {
-            Text(text = "$label: ", fontSize = 10.sp)
-            Text(text = "%.2f".format(value), fontSize = 10.sp)
+            Text(text = "$label: ", fontSize = 14.sp)
+            Text(text = "%.2f".format(value), fontSize = 14.sp)
         }
         Slider(
             value = value,
@@ -59,7 +59,7 @@ data class Settings(
 @Composable
 fun SettingsPanel(style: Settings, active: MutableState<Boolean>, onValueChange: (Settings) -> Unit) {
     LazyColumn(modifier = Modifier
-        .width(300.dp)
+        .width(400.dp)
         .onPointerEvent(eventType = PointerEventType.Enter) { active.value = true }
         .onPointerEvent(eventType = PointerEventType.Exit) { active.value = false }
     ) {
@@ -68,7 +68,7 @@ fun SettingsPanel(style: Settings, active: MutableState<Boolean>, onValueChange:
                 "Settings",
                 color = MaterialTheme.colors.primaryVariant,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(vertical = 10.dp)
+                modifier = Modifier.padding(vertical = 10.dp, horizontal = 10.dp)
             )
         }
         item {

@@ -2,6 +2,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.getValue
@@ -32,7 +33,7 @@ fun main() = application {
             var settings by remember { mutableStateOf(Settings()) }
             val moving = remember { mutableStateOf(false) }
 
-            Row {
+            Row(modifier = Modifier.padding(5.dp)) {
                 Canvas(
                     Modifier
                         .fillMaxHeight()
