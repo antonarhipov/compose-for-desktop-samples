@@ -1,10 +1,15 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +39,8 @@ fun StepSlider(
     }
 }
 
+val padding = Modifier.padding(10.dp)
+
 @Composable
 fun PropertySlider(
     initialValue: Double,
@@ -44,7 +51,7 @@ fun PropertySlider(
 ) {
     var value by remember { mutableStateOf(initialValue.toFloat()) }
     Column(
-        modifier = Modifier.padding(10.dp)
+        modifier = padding
     ) {
         Row {
             Text(text = "$label: ", fontSize = 14.sp)
@@ -81,13 +88,6 @@ data class Settings(
     val drawOuterOrbit: Boolean = true,
 )
 
-
-@Preview
-@Composable
-fun settings() {
-    SettingsPanel(Settings()) {}
-}
-
 @Preview
 @Composable
 fun SettingsPanel(style: Settings, onValueChange: (Settings) -> Unit) {
@@ -103,22 +103,16 @@ fun SettingsPanel(style: Settings, onValueChange: (Settings) -> Unit) {
             )
         }
         item {
-            Row {
-                Text("Draw inner orbit")
-                Spacer(Modifier.width(8.dp))
-                Switch(checked = style.drawInnerOrbit, onCheckedChange = { newValue ->
-                    onValueChange(style.copy(drawInnerOrbit = newValue))
-                })
-            }
+            Text(modifier = padding, text = "Draw inner orbit")
+            Switch(modifier = padding, checked = style.drawInnerOrbit, onCheckedChange = { newValue ->
+                onValueChange(style.copy(drawInnerOrbit = newValue))
+            })
         }
         item {
-            Row {
-                Text("Draw outer orbit")
-                Spacer(Modifier.width(8.dp))
-                Switch(checked = style.drawOuterOrbit, onCheckedChange = { newValue ->
-                    onValueChange(style.copy(drawOuterOrbit = newValue))
-                })
-            }
+            Text(modifier = padding, text = "Draw outer orbit")
+            Switch(modifier = padding, checked = style.drawOuterOrbit, onCheckedChange = { newValue ->
+                onValueChange(style.copy(drawOuterOrbit = newValue))
+            })
         }
         item {
             PropertySlider(
@@ -127,9 +121,6 @@ fun SettingsPanel(style: Settings, onValueChange: (Settings) -> Unit) {
                 MAX_ORBIT_RADIUS,
                 "Orbits radius"
             ) { newValue -> onValueChange(style.copy(orbitRadius = newValue)) }
-        }
-        item {
-            Divider(Modifier.padding(10.dp), color = Color.DarkGray)
         }
         item {
             StepSlider(
