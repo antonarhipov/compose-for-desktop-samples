@@ -1,3 +1,4 @@
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
+
 fun main() = application {
 
     Window(
@@ -31,7 +33,6 @@ fun main() = application {
     ) {
         MaterialTheme {
             var settings by remember { mutableStateOf(Settings()) }
-            val moving = remember { mutableStateOf(false) }
 
             Row(modifier = Modifier.padding(5.dp)) {
                 Canvas(
@@ -40,17 +41,21 @@ fun main() = application {
                         .width(800.dp)
                         .background(Color.White)
                 ) {
-                    outerOrbit(settings)
-                    innerOrbit(settings)
+                    if(settings.drawOuterOrbit){
+                        outerOrbit(settings)
+                    }
+                    if (settings.drawInnerOrbit) {
+                        innerOrbit(settings)
+                    }
                 }
-                SettingsPanel(settings, moving) { settings = it }
+                SettingsPanel(settings) { settings = it }
             }
         }
     }
 }
 
 private fun DrawScope.outerOrbit(settings: Settings) {
-    for (ang in 0..359 step 4) {
+    for (ang in 0..359 step settings.stepsOuterOrbit) {
         drawOffsetCircle(
             ang,
             settings.orbitRadius.toFloat(),
@@ -61,7 +66,7 @@ private fun DrawScope.outerOrbit(settings: Settings) {
 }
 
 private fun DrawScope.innerOrbit(settings: Settings) {
-    for (ang in 0..359 step 2) {
+    for (ang in 0..359 step settings.stepsInnerOrbit) {
         drawOffsetCircle(
             ang,
             settings.orbitRadius.toFloat(),

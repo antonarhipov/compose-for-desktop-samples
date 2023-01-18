@@ -1,19 +1,38 @@
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+@Composable
+fun StepSlider(
+    initialValue: Int,
+    minValue: Int,
+    maxValue: Int,
+    label: String,
+    onChange: (Int) -> Unit,
+) {
+    var value by remember { mutableStateOf(initialValue.toFloat()) }
+    Column(
+        modifier = Modifier.padding(10.dp)
+    ) {
+        Row {
+            Text(text = "$label: ", fontSize = 14.sp)
+            Text(text = "%d".format(value.toInt()), fontSize = 14.sp)
+        }
+        Slider(
+            value = value,
+            valueRange = minValue.toFloat()..maxValue.toFloat(),
+            onValueChange = { value = it; onChange(value.toInt()) },
+            onValueChangeFinished = { onChange(value.toInt()) }
+        )
+    }
+}
 
 @Composable
 fun PropertySlider(
@@ -40,28 +59,40 @@ fun PropertySlider(
     }
 }
 
-const val MIN_ORBIT_RADIUS = 240.00
-const val MAX_ORBIT_RADIUS = 400.00
+const val MIN_RANDOM = 0.1
+const val MAX_RANDOM = 50.0
+const val MIN_ORBIT_RADIUS = 100.00
+const val MAX_ORBIT_RADIUS = 600.00
 const val MIN_INNER_RADIUS = 100.00
 const val MAX_INNER_RADIUS = 200.00
 const val MIN_OUTER_RADIUS = 200.00
 const val MAX_OUTER_RADIUS = 300.00
+const val MIN_STEPS = 1
+const val MAX_STEPS = 360
 
 data class Settings(
-    val orbitRadius: Double = MIN_ORBIT_RADIUS,
+    val orbitRadius: Double = 300.0,
     val innerCirclesRadius: Double = MIN_INNER_RADIUS,
     val outerCirclesRadius: Double = MIN_OUTER_RADIUS,
-    val randomCoefficient: Double = 2.0
+    val randomCoefficient: Double = MIN_RANDOM,
+    val stepsInnerOrbit: Int = 3,
+    val stepsOuterOrbit: Int = 5,
+    val drawInnerOrbit: Boolean = true,
+    val drawOuterOrbit: Boolean = true,
 )
 
 
-@OptIn(ExperimentalComposeUiApi::class)
+@Preview
 @Composable
-fun SettingsPanel(style: Settings, active: MutableState<Boolean>, onValueChange: (Settings) -> Unit) {
-    LazyColumn(modifier = Modifier
-        .width(400.dp)
-        .onPointerEvent(eventType = PointerEventType.Enter) { active.value = true }
-        .onPointerEvent(eventType = PointerEventType.Exit) { active.value = false }
+fun settings() {
+    SettingsPanel(Settings()) {}
+}
+
+@Preview
+@Composable
+fun SettingsPanel(style: Settings, onValueChange: (Settings) -> Unit) {
+    LazyColumn(
+        modifier = Modifier.width(400.dp)
     ) {
         item {
             Text(
@@ -72,19 +103,56 @@ fun SettingsPanel(style: Settings, active: MutableState<Boolean>, onValueChange:
             )
         }
         item {
+            Row {
+                Text("Draw inner orbit")
+                Spacer(Modifier.width(8.dp))
+                Switch(checked = style.drawInnerOrbit, onCheckedChange = { newValue ->
+                    onValueChange(style.copy(drawInnerOrbit = newValue))
+                })
+            }
+        }
+        item {
+            Row {
+                Text("Draw outer orbit")
+                Spacer(Modifier.width(8.dp))
+                Switch(checked = style.drawOuterOrbit, onCheckedChange = { newValue ->
+                    onValueChange(style.copy(drawOuterOrbit = newValue))
+                })
+            }
+        }
+        item {
             PropertySlider(
                 style.orbitRadius,
                 MIN_ORBIT_RADIUS,
                 MAX_ORBIT_RADIUS,
-                "Orbit radius"
+                "Orbits radius"
             ) { newValue -> onValueChange(style.copy(orbitRadius = newValue)) }
+        }
+        item {
+            Divider(Modifier.padding(10.dp), color = Color.DarkGray)
+        }
+        item {
+            StepSlider(
+                style.stepsInnerOrbit,
+                MIN_STEPS,
+                MAX_STEPS,
+                "Steps for inner orbit"
+            ) { newValue -> onValueChange(style.copy(stepsInnerOrbit = newValue)) }
+        }
+        item {
+            StepSlider(
+                style.stepsOuterOrbit,
+                MIN_STEPS,
+                MAX_STEPS,
+                "Steps for outer orbit"
+            ) { newValue -> onValueChange(style.copy(stepsOuterOrbit = newValue)) }
         }
         item {
             PropertySlider(
                 style.innerCirclesRadius,
                 MIN_INNER_RADIUS,
                 MAX_INNER_RADIUS,
-                "Inner orbit circle radius"
+                "Inner orbit circles radius"
             ) { newValue -> onValueChange(style.copy(innerCirclesRadius = newValue)) }
         }
         item {
@@ -92,16 +160,18 @@ fun SettingsPanel(style: Settings, active: MutableState<Boolean>, onValueChange:
                 style.outerCirclesRadius,
                 MIN_OUTER_RADIUS,
                 MAX_OUTER_RADIUS,
-                "Outer orbit circle radius"
+                "Outer orbit circles radius"
             ) { newValue -> onValueChange(style.copy(outerCirclesRadius = newValue)) }
         }
         item {
             PropertySlider(
                 style.randomCoefficient,
-                0.1,
-                10.0,
+                MIN_RANDOM,
+                MAX_RANDOM,
                 "Random"
             ) { newValue -> onValueChange(style.copy(randomCoefficient = newValue)) }
         }
     }
 }
+
+
