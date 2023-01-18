@@ -90,7 +90,7 @@ data class Settings(
 
 @Preview
 @Composable
-fun SettingsPanel(style: Settings, onValueChange: (Settings) -> Unit) {
+fun SettingsPanel(settings: Settings, onValueChange: (Settings) -> Unit) {
     LazyColumn(
         modifier = Modifier.width(400.dp)
     ) {
@@ -104,63 +104,63 @@ fun SettingsPanel(style: Settings, onValueChange: (Settings) -> Unit) {
         }
         item {
             Text(modifier = padding, text = "Draw inner orbit")
-            Switch(modifier = padding, checked = style.drawInnerOrbit, onCheckedChange = { newValue ->
-                onValueChange(style.copy(drawInnerOrbit = newValue))
+            Switch(modifier = padding, checked = settings.drawInnerOrbit, onCheckedChange = { newValue ->
+                onValueChange(settings.copy(drawInnerOrbit = newValue))
             })
         }
         item {
             Text(modifier = padding, text = "Draw outer orbit")
-            Switch(modifier = padding, checked = style.drawOuterOrbit, onCheckedChange = { newValue ->
-                onValueChange(style.copy(drawOuterOrbit = newValue))
+            Switch(modifier = padding, checked = settings.drawOuterOrbit, onCheckedChange = { newValue ->
+                onValueChange(settings.copy(drawOuterOrbit = newValue))
             })
         }
         item {
             PropertySlider(
-                style.orbitRadius,
+                settings.orbitRadius,
                 MIN_ORBIT_RADIUS,
                 MAX_ORBIT_RADIUS,
                 "Orbits radius"
-            ) { newValue -> onValueChange(style.copy(orbitRadius = newValue)) }
+            ) { newValue -> onValueChange(settings.copy(orbitRadius = newValue)) }
         }
         item {
             StepSlider(
-                style.stepsInnerOrbit,
+                settings.stepsInnerOrbit,
                 MIN_STEPS,
                 MAX_STEPS,
                 "Steps for inner orbit"
-            ) { newValue -> onValueChange(style.copy(stepsInnerOrbit = newValue)) }
+            ) { newValue -> onValueChange(settings.copy(stepsInnerOrbit = newValue)) }
         }
         item {
             StepSlider(
-                style.stepsOuterOrbit,
+                settings.stepsOuterOrbit,
                 MIN_STEPS,
                 MAX_STEPS,
                 "Steps for outer orbit"
-            ) { newValue -> onValueChange(style.copy(stepsOuterOrbit = newValue)) }
+            ) { newValue -> onValueChange(settings.copy(stepsOuterOrbit = newValue)) }
         }
         item {
             PropertySlider(
-                style.innerCirclesRadius,
+                settings.innerCirclesRadius,
                 MIN_INNER_RADIUS,
                 MAX_INNER_RADIUS,
                 "Inner orbit circles radius"
-            ) { newValue -> onValueChange(style.copy(innerCirclesRadius = newValue)) }
+            ) { newValue -> onValueChange(settings.copy(innerCirclesRadius = newValue)) }
         }
         item {
             PropertySlider(
-                style.outerCirclesRadius,
+                settings.outerCirclesRadius,
                 MIN_OUTER_RADIUS,
                 MAX_OUTER_RADIUS,
                 "Outer orbit circles radius"
-            ) { newValue -> onValueChange(style.copy(outerCirclesRadius = newValue)) }
+            ) { newValue -> onValueChange(settings.copy(outerCirclesRadius = newValue)) }
         }
         item {
             PropertySlider(
-                style.randomCoefficient,
+                settings.randomCoefficient,
                 MIN_RANDOM,
                 MAX_RANDOM,
                 "Random"
-            ) { newValue -> onValueChange(style.copy(randomCoefficient = newValue)) }
+            ) { newValue -> onValueChange(settings.copy(randomCoefficient = newValue)) }
         }
     }
 }
