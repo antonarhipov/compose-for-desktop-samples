@@ -23,10 +23,11 @@ fun main() = application {
             val modifier = Modifier.fillMaxSize().background(Color.White)
 
             Canvas(modifier) {
+                val orbitRadius = 200f
                 for (ang in 0 until 10 * 360 step 3) {
                     val rad = Math.toRadians(ang.toDouble())
-                    val x = (200f + ang / 5) * cos(rad).toFloat()
-                    val y = (200f + ang / 5) * sin(rad).toFloat()
+                    val x = (orbitRadius + ang / 5) * cos(rad).toFloat()
+                    val y = (orbitRadius + ang / 5) * sin(rad).toFloat()
 
                     drawCircle(
                         color = Color(
