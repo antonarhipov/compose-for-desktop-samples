@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
@@ -48,7 +49,10 @@ fun main() = application {
                         innerOrbit(settings)
                     }
                 }
-                SettingsPanel(settings) { settings = it }
+//                SettingsPanel(settings) { settings = it }
+                DynamicSettingsPanel(settings) {
+                    settings = it
+                }
             }
         }
     }
@@ -58,8 +62,8 @@ private fun DrawScope.outerOrbit(settings: Settings) {
     for (ang in 0..359 step settings.stepsOuterOrbit) {
         drawOffsetCircle(
             ang,
-            settings.orbitRadius.toFloat(),
-            settings.outerCirclesRadius.toFloat(),
+            settings.orbitRadius,
+            settings.outerCirclesRadius,
             randomCoefficient = settings.randomCoefficient
         )
     }
@@ -69,8 +73,8 @@ private fun DrawScope.innerOrbit(settings: Settings) {
     for (ang in 0..359 step settings.stepsInnerOrbit) {
         drawOffsetCircle(
             ang,
-            settings.orbitRadius.toFloat(),
-            settings.innerCirclesRadius.toFloat(),
+            settings.orbitRadius,
+            settings.innerCirclesRadius,
             strokeWidth = 1.3f,
             randomCoefficient = settings.randomCoefficient
         )
@@ -82,14 +86,18 @@ private fun DrawScope.drawOffsetCircle(
     offsetRadius: Float,
     circleRadius: Float,
     strokeWidth: Float = 1.1f,
-    randomCoefficient: Double = 1.0
+    randomCoefficient: Float = 1.0f
 ) {
     val rad = Math.toRadians(angle.toDouble())
 
+    val randomOffset =
+        if (randomCoefficient > 0) Random.nextDouble(abs(randomCoefficient.toDouble()))
+        else 0.0
+
     //The offsets create minor glitches in the overall drawing
     //that make it look as if these are hand-drawn
-    val offsetX = (offsetRadius * cos(rad) + Random.nextDouble(randomCoefficient)).toFloat()
-    val offsetY = (offsetRadius * sin(rad) + Random.nextDouble(randomCoefficient)).toFloat()
+    val offsetX = (offsetRadius * cos(rad) + randomOffset).toFloat()
+    val offsetY = (offsetRadius * sin(rad) + randomOffset).toFloat()
 
     drawCircle(
         color = Color.Gray,

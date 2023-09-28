@@ -2,8 +2,8 @@ import org.jetbrains.compose.compose
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.20"
-    id("org.jetbrains.compose") version "1.2.2"
+    kotlin("jvm") version "1.9.10"
+    id("org.jetbrains.compose") version "1.5.2"
 }
 
 repositories {
@@ -22,15 +22,15 @@ dependencies {
 //    }
 //}
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf(
-            "-Xcontext-receivers",
-//            "-Xuse-k2",
-            "-Xbackend-threads=4",
-        )
-        jvmTarget = "11"
-        languageVersion = "1.7"
-    }
-}
-
+//tasks.withType<KotlinCompile> {
+//    kotlinOptions {
+//        freeCompilerArgs = listOf(
+//            "-Xcontext-receivers",
+////            "-Xuse-k2",
+//            "-Xbackend-threads=4",
+//        )
+//        jvmTarget = "11"
+//
+//    }
+//}
+//
