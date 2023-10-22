@@ -172,8 +172,7 @@ annotation class BooleanConstraint(val label: String)
 
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class EnumeratedConstraint(val label: String, vararg val options: String)
-
+annotation class EnumeratedConstraint(val label: String, vararg val options: Int)
 
 @Preview
 @Composable

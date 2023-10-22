@@ -14,6 +14,7 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation(kotlin("reflect"))
 }
 
 //compose.desktop {
