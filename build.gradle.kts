@@ -1,5 +1,3 @@
-import org.jetbrains.compose.compose
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.9.20"
@@ -14,6 +12,15 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation(compose.animationGraphics)
+    implementation(compose.animation)
+    implementation(compose.ui)
+    implementation(compose.runtime)
+    implementation(compose.runtimeSaveable)
+    implementation(compose.foundation)
+    implementation(compose.uiTooling)
+//    implementation(compose)
+
     implementation(kotlin("reflect"))
 }
 
