@@ -58,12 +58,18 @@ private fun DrawScope.drawOffsetCircle(angle: Int, offsetRadius: Float, circleRa
     val offsetX = (offsetRadius * cos(rad) + Random.nextDouble(2.9)).toFloat()
     val offsetY = (offsetRadius * sin(rad) + Random.nextDouble(2.9)).toFloat()
 
+    
+    val attenuation = 0.1f
+    val x = offsetX * sin(rad + attenuation * angle)
+    val y = offsetY * cos(rad + attenuation * angle)
+
+
     drawCircle(
         color = Color.DarkGray,
         radius = circleRadius,
         center = Offset(
-            this.center.x + offsetX,
-            this.center.y + offsetY
+            this.center.x + offsetX + x.toFloat(),
+            this.center.y + offsetY + y.toFloat()
         ),
         style = Stroke(width = strokeWidth),
     )
