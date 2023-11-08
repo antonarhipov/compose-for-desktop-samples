@@ -162,6 +162,9 @@ private class MidiLogger(private val receiver: Receiver) : Receiver {
                 "Controller %d, Value %d",
                 byteToInt(bytes[i]), byteToInt(bytes[i + 1])
             )
+            val sm = ShortMessage()
+            sm.setMessage(ShortMessage.PROGRAM_CHANGE, 0, byteToInt(bytes[i + 1]), 0 )
+            receiver.send(sm, 0)
             i += 2
         }
         println()
