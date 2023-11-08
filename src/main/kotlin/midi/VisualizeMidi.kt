@@ -19,7 +19,7 @@ import javax.sound.midi.MidiMessage
 
 fun main() = application {
     val flow = MutableStateFlow<MidiMessage>(DummyMidiMessage)
-    MidiSource(flow).start() // whatever the API is
+    MidiSource(flow).start()
 
     Window(
         onCloseRequest = ::exitApplication,
