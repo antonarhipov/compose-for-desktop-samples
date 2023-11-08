@@ -38,14 +38,14 @@ fun main() = application {
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-private fun DrawScope.displayNoteOn(message: MidiMessage, ) {
+private fun DrawScope.displayNoteOn(message: MidiMessage) {
     if (message.length < 3 || message.length % 2 == 0) return // Bad MIDI message
 
     val bytes = message.message
     println("Message: ${bytes.toHexString()}")
     val noteNumber = byteToInt(bytes[1])
 
-    val color =  Color(
+    val color = Color(
         (0..255).random(),
         (0..255).random(),
         (0..255).random(),
