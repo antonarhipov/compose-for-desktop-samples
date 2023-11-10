@@ -8,6 +8,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -21,6 +22,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.sound.midi.MidiMessage
@@ -30,8 +32,17 @@ import javax.sound.midi.ShortMessage.NOTE_ON
 import kotlin.random.Random
 
 
-data class Circle(val noteNumber: Int, val xPercent: Float, val yPercent: Float, val color: Color) {
+data class Circle(
+    val noteNumber: Int,
+    val xPercent: Float,
+    val yPercent: Float,
+    val baseColor: Color
+) {
     var alpha = mutableStateOf<Float>(0f)
+
+    val color by derivedStateOf {
+        baseColor.copy(alpha = alpha.value)
+    }
 }
 
 suspend fun Circle.fade() {
@@ -50,7 +61,7 @@ suspend fun Circle.fade() {
 fun main() = application {
     val notesOnAntonsKeyboard = 48..72
 
-    val flow = MutableStateFlow<MidiMessage>(DummyMidiMessage)
+    val flow = MutableSharedFlow<MidiMessage>(extraBufferCapacity = 100)
     val midiSource = remember {
         MidiSource(flow).apply {
             start()
@@ -79,7 +90,7 @@ fun main() = application {
                                 noteNumber = it,
                                 xPercent = Random.nextFloat(),
                                 yPercent = Random.nextFloat(),
-                                color = Color(
+                                baseColor = Color(
                                     red = (0..255).random(),
                                     green = (0..255).random(),
                                     blue = (0..255).random(),
@@ -93,6 +104,7 @@ fun main() = application {
             Row {
                 for (i in notesOnAntonsKeyboard) {
                     val noteIndex = i - notesOnAntonsKeyboard.first
+                    val circle = circles[noteIndex]
                     OutlinedButton(
                         modifier = Modifier.width(32.dp),
                         contentPadding = PaddingValues(0.dp),
@@ -115,7 +127,10 @@ fun main() = application {
 //                            scope.launch {
 //                                circles[noteIndex].fade()
 //                            }
-                        }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = circle.color,
+                        )
                     ) {
                         Text(i.toString())
                     }
@@ -162,7 +177,7 @@ fun main() = application {
 private fun DrawScope.displayNoteOn(circle: Circle) {
     //TODO: map & scatter the shapes horizontally across canvas
     drawCircle(
-        color = circle.color.copy(alpha = circle.alpha.value),
+        color = circle.color,
         radius = (circle.noteNumber * 10).toFloat(),
         center = center,
         style = Stroke(width = 20f),
