@@ -1,6 +1,9 @@
 package midi
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import javax.sound.midi.MidiMessage
 import javax.sound.midi.MidiSystem
 import javax.sound.midi.Receiver
@@ -8,21 +11,57 @@ import javax.sound.midi.Receiver
 private const val TRANSMITTER_DEVICE_NAME = "javax.sound.midi.Transmitter#MPKmini2"
 private const val TRANSMITTER_PROPERTY = "javax.sound.midi.Transmitter"
 
+private val SYNTH_DEV_NAME = "javax.sound.midi.Synthesizer#Gervill"
+private val SYNTH_PROP_KEY = "javax.sound.midi.Synthesizer"
+
 
 class MidiSource(private val flow: MutableSharedFlow<MidiMessage>) : Receiver {
     init {
         System.setProperty(TRANSMITTER_PROPERTY, TRANSMITTER_DEVICE_NAME)
+        System.setProperty(SYNTH_PROP_KEY, SYNTH_DEV_NAME)
     }
+
+    var synthesizer: Receiver? = null
+    var logger: MidiLogger? = null
 
     fun start() {
         val transmitter = MidiSystem.getTransmitter()
         println("Transmitter: $transmitter")
-//        transmitter.receiver = MidiLogger(this) // tracing
-        transmitter.receiver = this
+
+        val synth = MidiSystem.getSynthesizer()
+
+        if (!synth.isOpen) {
+            synth.open()
+            println("Loaded instruments:")
+            println(synth.loadedInstruments.contentToString())
+        }
+
+        val receiver = synth.receiver
+        synthesizer = synth.receiver
+        logger = MidiLogger(receiver)
+
+        transmitter.receiver = MidiLogger(this) // tracing
+//        transmitter.receiver = this
         println("Play on your musical keyboard...")
     }
 
     override fun close() {}
+
+    val scope = CoroutineScope(Dispatchers.Default)
+
+//    fun playFlow() {
+//        scope.launch {
+//            flow.collect {
+//                val timestamp = System.nanoTime() / 1000//000
+//                println("Our timestamp is $timestamp")
+//                
+//                //synthesizer?.send(it, timestamp)
+//                send(it, timestamp)
+//            }
+//        }
+//    }
+    // 2081781244
+    // 2081776824284
 
     override fun send(message: MidiMessage, timeStamp: Long) {
         val status = message.getStatus()
@@ -34,7 +73,10 @@ class MidiSource(private val flow: MutableSharedFlow<MidiMessage>) : Receiver {
         val leftNibble = status and 0xf0
         when (leftNibble) {
             // only emit "note on" messages
-            0x90 -> flow.tryEmit(message)
+            0x90 -> {
+                flow.tryEmit(message)
+                synthesizer?.send(message, timeStamp / 1000000)
+            }
         }
     }
 
