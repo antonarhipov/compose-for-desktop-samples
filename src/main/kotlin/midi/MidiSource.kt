@@ -47,22 +47,6 @@ class MidiSource(private val flow: MutableSharedFlow<MidiMessage>) : Receiver {
 
     override fun close() {}
 
-    val scope = CoroutineScope(Dispatchers.Default)
-
-//    fun playFlow() {
-//        scope.launch {
-//            flow.collect {
-//                val timestamp = System.nanoTime() / 1000//000
-//                println("Our timestamp is $timestamp")
-//                
-//                //synthesizer?.send(it, timestamp)
-//                send(it, timestamp)
-//            }
-//        }
-//    }
-    // 2081781244
-    // 2081776824284
-
     override fun send(message: MidiMessage, timeStamp: Long) {
         val status = message.getStatus()
 
