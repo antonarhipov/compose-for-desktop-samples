@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -23,7 +22,6 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.sound.midi.MidiMessage
 import javax.sound.midi.ShortMessage
@@ -75,12 +73,6 @@ fun main() = application {
         state = rememberWindowState(width = 1000.dp, height = 1000.dp)
     ) {
         Column {
-            val message by flow.collectAsState(DummyMidiMessage)
-
-            //TODO: explore shaders for effects https://github.com/drinkthestars/shady
-            //TODO: fade out animations for the individual shapes
-
-
             val scope = rememberCoroutineScope()
             val circles = remember {
                 mutableStateListOf<Circle>().apply {
@@ -101,12 +93,31 @@ fun main() = application {
                 }
             }
 
+            //val message by flow.collectAsState(DummyMidiMessage)
+            LaunchedEffect(flow) {
+                flow.collect { message ->
+                    if (message.length < 3 || message.length % 2 == 0) return@collect // Bad MIDI message
+
+                    val bytes = message.message
+                    println("Message: ${bytes.toHexString()}")
+                    val noteNumber = byteToInt(bytes[1])
+                    if (noteNumber !in notesOnAntonsKeyboard) return@collect
+
+                    scope.launch {
+                        circles[noteNumber - notesOnAntonsKeyboard.first].fade()
+                    }
+                }
+            }
+
+            //TODO: explore shaders for effects https://github.com/drinkthestars/shady
+            //TODO: fade out animations for the individual shapes
+
             Row {
                 for (i in notesOnAntonsKeyboard) {
                     val noteIndex = i - notesOnAntonsKeyboard.first
                     val circle = circles[noteIndex]
                     OutlinedButton(
-                        modifier = Modifier.width(32.dp),
+                        modifier = Modifier.weight(1f),
                         contentPadding = PaddingValues(0.dp),
                         onClick = {
                             scope.launch {
@@ -124,9 +135,6 @@ fun main() = application {
                                     System.nanoTime() / 1000
                                 )
                             }
-//                            scope.launch {
-//                                circles[noteIndex].fade()
-//                            }
                         },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = circle.color,
@@ -134,25 +142,6 @@ fun main() = application {
                     ) {
                         Text(i.toString())
                     }
-                }
-            }
-
-
-//        fun playNote() {
-//            scope.launch {
-//                newCircle.fade()
-//            }
-//        }
-            LaunchedEffect(message) {
-                if (message.length < 3 || message.length % 2 == 0) return@LaunchedEffect // Bad MIDI message
-
-                val bytes = message.message
-                println("Message: ${bytes.toHexString()}")
-                val noteNumber = byteToInt(bytes[1])
-                if (noteNumber !in notesOnAntonsKeyboard) return@LaunchedEffect
-
-                scope.launch {
-                    circles[noteNumber - notesOnAntonsKeyboard.first].fade()
                 }
             }
 
@@ -165,15 +154,6 @@ fun main() = application {
     }
 }
 
-//circles.forEach { circle ->
-//    drawCircle(
-//        Color.Red.copy(alpha = circle.alpha.value),
-//        radius = 100f,
-//        center = Offset(size.width * circle.xPercent, size.height * circle.yPercent)
-//    )
-//}
-
-@OptIn(ExperimentalStdlibApi::class)
 private fun DrawScope.displayNoteOn(circle: Circle) {
     //TODO: map & scatter the shapes horizontally across canvas
     drawCircle(
@@ -185,10 +165,3 @@ private fun DrawScope.displayNoteOn(circle: Circle) {
 }
 
 private fun byteToInt(b: Byte) = b.toInt() and 0xff
-
-// not supposed to be used for anything
-object DummyMidiMessage : MidiMessage(ByteArray(0)) {
-    override fun clone(): Any {
-        TODO("This is a dummy message")
-    }
-}
