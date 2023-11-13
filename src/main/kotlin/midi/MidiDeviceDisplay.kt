@@ -22,19 +22,19 @@ fun main() {
     }
 }
 
-private fun MidiDevice.deviceType() {
+private fun MidiDevice.deviceType(): String {
     fun inPort() = if (maxReceivers != 0) "IN " else ""
     fun outPort() = if (maxTransmitters != 0) "OUT " else ""
 
-    buildString {
-        append(
+    return buildString {
+        appendLine(
             when (this@deviceType) {
                 is Sequencer -> "This is a sequencer"
                 is Synthesizer -> "This is a synthesizer"
                 else -> "This is a MIDI port " + inPort() + outPort()
             }
         )
-        append("Maximum receivers: ${maxToString(maxReceivers)}")
+        appendLine("Maximum receivers: ${maxToString(maxReceivers)}")
         append("Maximum transmitters: ${maxToString(maxTransmitters)}")
     }
 }

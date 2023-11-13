@@ -8,7 +8,9 @@ import javax.sound.midi.MidiMessage
 import javax.sound.midi.MidiSystem
 import javax.sound.midi.Receiver
 
-private const val TRANSMITTER_DEVICE_NAME = "javax.sound.midi.Transmitter#MPKmini2"
+//private const val TRANSMITTER_DEVICE_NAME = "javax.sound.midi.Transmitter#MPKmini2"
+//private const val TRANSMITTER_DEVICE_NAME = "javax.sound.midi.Transmitter#Arturia DrumBrute Impact"
+private const val TRANSMITTER_DEVICE_NAME = "javax.sound.midi.Transmitter#KeyStep Pro"
 private const val TRANSMITTER_PROPERTY = "javax.sound.midi.Transmitter"
 
 private val SYNTH_DEV_NAME = "javax.sound.midi.Synthesizer#Gervill"

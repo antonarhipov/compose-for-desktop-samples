@@ -57,7 +57,9 @@ suspend fun Circle.fade() {
 
 @OptIn(ExperimentalStdlibApi::class)
 fun main() = application {
-    val notesOnAntonsKeyboard = 48..72
+    val mpkMini2 = 48..72
+    val keystepPro = 36..72
+    val keyboardRange = keystepPro
 
     val flow = MutableSharedFlow<MidiMessage>(extraBufferCapacity = 100)
     val midiSource = remember {
@@ -76,7 +78,7 @@ fun main() = application {
             val scope = rememberCoroutineScope()
             val circles = remember {
                 mutableStateListOf<Circle>().apply {
-                    (notesOnAntonsKeyboard).forEach {
+                    (keyboardRange).forEach {
                         add(
                             Circle(
                                 noteNumber = it,
@@ -101,10 +103,10 @@ fun main() = application {
                     val bytes = message.message
                     println("Message: ${bytes.toHexString()}")
                     val noteNumber = byteToInt(bytes[1])
-                    if (noteNumber !in notesOnAntonsKeyboard) return@collect
+                    if (noteNumber !in keyboardRange) return@collect
 
                     scope.launch {
-                        circles[noteNumber - notesOnAntonsKeyboard.first].fade()
+                        circles[noteNumber - keyboardRange.first].fade()
                     }
                 }
             }
@@ -113,8 +115,8 @@ fun main() = application {
             //TODO: fade out animations for the individual shapes
 
             Row {
-                for (i in notesOnAntonsKeyboard) {
-                    val noteIndex = i - notesOnAntonsKeyboard.first
+                for (i in keyboardRange) {
+                    val noteIndex = i - keyboardRange.first
                     val circle = circles[noteIndex]
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
